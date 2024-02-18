@@ -1,4 +1,4 @@
-# Issue Manager
+# Issue Manager Action
 
 Automatically close issues or Pull Requests that have a **label**, after a **custom delay**, if no one replies back.
 
@@ -9,7 +9,7 @@ Install this GitHub action by creating a file in your repo at `.github/workflows
 A minimal example could be:
 
 ```yml
-name: Issue Manager
+name: Issue Manager Action
 
 on:
   schedule:
@@ -29,7 +29,7 @@ jobs:
   issue-manager-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: khulnasoft/issue-manager-action@0.4.0
+      - uses: khulnasoft/issue-manager-action@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config: '{"answered": {}}'
@@ -195,7 +195,7 @@ Just make sure to indent everything to be part of the same string.
 So, you can put all the config with:
 
 ```yml
-name: Issue Manager
+name: Issue Manager Action
 
 on:
   schedule:
@@ -216,7 +216,7 @@ jobs:
   issue-manager-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: khulnasoft/issue-manager-action@0.4.0
+      - uses: khulnasoft/issue-manager-action@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config: >
@@ -261,7 +261,7 @@ It's fine to leave the `$schema` in the `config` on the `.yml` file, it will be 
 **Note**: you probably don't need all the configs, the examples above should suffice for most cases. But if you want to make the GitHub action _not_ remove the labels if someone adds a new comment, this can help as an example:
 
 ```yml
-name: Issue Manager
+name: Issue Manager Action
 
 on:
   schedule:
@@ -282,7 +282,7 @@ jobs:
   issue-manager-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: khulnasoft/issue-manager-action@0.4.0
+      - uses: khulnasoft/issue-manager-action@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config: >
@@ -365,7 +365,7 @@ One option would be to use a tool that closes stale issues, like [probot/stale](
 
 But if the user came back explaining that my answer didn't respond to his/her problem or giving the extra info requested, but I couldn't respond on time, the issue would still go "stale" and be closed.
 
-## What Issue Manager does
+## What Issue Manager Action does
 
 This action allows the repo owner to add a label (e.g. `answered`) to an issue after answering. Or multiple labels with multiple configurations (multiple messages, delays, etc).
 
