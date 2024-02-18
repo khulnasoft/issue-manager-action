@@ -1,0 +1,33 @@
+name: Issue Manager Action
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  issue_comment:
+    types:
+      - created
+      - edited
+  issues:
+    types:
+      - labeled
+
+jobs:
+  issue-manager:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: khulnasoft/issue-manager-action@master
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+        config: >
+          {
+            "answered":{
+                "delay": 300,
+                "users": ["gitworkflows"],
+                "message": "This issue shall be closed."
+            },
+            "more-info-needed": {
+              "delay": 120,
+              "remove_label_on_close": true
+            }
+          }
