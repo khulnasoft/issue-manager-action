@@ -1,10 +1,10 @@
 # Issue Manager
 
-Automatically close issues or Pull Requests that have a **label**, after a **custom delay**, if no one replies back.
+Automatically close issues or pull requests that have a **label**, after a **custom delay**, if no one replies back.
 
 ## How to use
 
-Install this GitHub action by creating a file in your repo at `.github/workflows/issue-manager-action.yml`.
+Install this GitHub action by creating a file in your repo at `.github/workflows/issue-manager.yml`.
 
 A minimal example could be:
 
@@ -25,11 +25,15 @@ on:
       - labeled
   workflow_dispatch:
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
-  issue-manager-action:
+  issue-manager:
     runs-on: ubuntu-latest
     steps:
-      - uses: khulnasoft/issue-manager-action@0.4.0
+      - uses: khulnasoft/issue-manager@0.5.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config: '{"answered": {}}'
@@ -49,9 +53,9 @@ But if someone adds a comment _after_ you added the label, this GitHub Action wi
 
 ## Config
 
-You can use any file name you want, `issue-manager-action.yml` is just a suggestion. But it has to be inside of `.github/workflows/` and have a `.yml` extension.
+You can use any file name you want, `issue-manager.yml` is just a suggestion. But it has to be inside of `.github/workflows/` and have a `.yml` extension.
 
-If you check, the `config` in that file `issue-manager-action.yml` above has a `string`, and inside the string there's a whole JSON configuration:
+If you check, the `config` in that file `issue-manager.yml` above has a `string`, and inside the string there's a whole JSON configuration:
 
 ```JSON
 {"answered": {}}
@@ -186,7 +190,7 @@ Assuming the original issue was solved, it will be automatically closed now.
 
 ### Config in the action
 
-To use that same JSON config from above, you would have to put it on a single `string` inside the GitHub Action config (`issue-manager-action.yml`).
+To use that same JSON config from above, you would have to put it on a single `string` inside the GitHub Action config (`issue-manager.yml`).
 
 But YAML supports multiline strings using `>`.
 
@@ -212,11 +216,15 @@ on:
       - labeled
   workflow_dispatch:
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
-  issue-manager-action:
+  issue-manager:
     runs-on: ubuntu-latest
     steps:
-      - uses: khulnasoft/issue-manager-action@0.4.0
+      - uses: khulnasoft/issue-manager@0.5.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config: >
@@ -248,7 +256,7 @@ You can start your JSON config file with:
 
 ```JSON
 {
-    "$schema": "https://raw.githubusercontent.com/khulnasoft/issue-manager-action/master/schema.json"
+    "$schema": "https://raw.githubusercontent.com/khulnasoft/issue-manager/master/schema.json"
 }
 ```
 
@@ -278,16 +286,20 @@ on:
       - labeled
   workflow_dispatch:
 
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
-  issue-manager-action:
+  issue-manager:
     runs-on: ubuntu-latest
     steps:
-      - uses: khulnasoft/issue-manager-action@0.4.0
+      - uses: khulnasoft/issue-manager@0.5.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config: >
             {
-                "$schema": "https://raw.githubusercontent.com/khulnasoft/issue-manager-action/master/schema.json",
+                "$schema": "https://raw.githubusercontent.com/khulnasoft/issue-manager/master/schema.json",
                 "answered": {
                     "delay": "P3DT12H30M5S",
                     "message": "It seems the issue was answered, closing this now.",
@@ -339,6 +351,22 @@ on:
     * This way you can add a label to a PR that was answered long ago, or that was waiting for more comments from the author, reviews, commits, etc. And if the configured delay since the last comment is enough the GitHub action will close the issue right away.
 * The `workflow_dispatch` option allows you to run the action manually from the GitHub Actions tab for your repo.
 
+## GitHub Action Permissions
+
+From the examples above you can see a section:
+
+```yml
+permissions:
+  issues: write
+  pull-requests: write
+```
+
+This is to give the GitHub Action the necessary permissions to write to the issues and pull requests (including removing the label).
+
+When you add this GitHub Action to a personal repo, you might not need this specific permission.
+
+But when you add it to a repo that belongs to a GitHub organization, depending on the organization default configurations, you might need to explicitly set this permission.
+
 ## Motivation
 
 ### Closing early
@@ -384,41 +412,59 @@ It will also run after each comment or label added, with the specific issue that
 
 ### Latest Changes
 
+### 0.5.1
+
+#### Features
+
+* ⚡️ Improve speed (from 23 seconds to 3 seconds) by using Docker underneath. PR [#33](https://github.com/khulnasoft/issue-manager/pull/33) by [@khulnasoft](https://github.com/khulnasoft).
+
+#### Fixes
+
+* 🐛 Fix Docker deploy on branch `master` (not `main`). PR [#34](https://github.com/khulnasoft/issue-manager/pull/34) by [@khulnasoft](https://github.com/khulnasoft).
+
+#### Docs
+
+* 📝 Update docs and include `permissions` for `pull-request: write`. PR [#29](https://github.com/khulnasoft/issue-manager/pull/29) by [@khulnasoft](https://github.com/khulnasoft).
+* 📝 Update docs about token permissions. PR [#27](https://github.com/khulnasoft/issue-manager/pull/27) by [@khulnasoft](https://github.com/khulnasoft).
+
 #### Internal
 
-* 🔧 Add GitHub templates for discussions and issues, and security policy. PR [#22](https://github.com/khulnasoft/issue-manager-action/pull/22) by [@alejsdev](https://github.com/alejsdev).
+* 👷 Update `issue-manager.yml`. PR [#32](https://github.com/khulnasoft/issue-manager/pull/32) by [@khulnasoft](https://github.com/khulnasoft).
+* 👷 Update `latest-changes` GitHub Action. PR [#28](https://github.com/khulnasoft/issue-manager/pull/28) by [@khulnasoft](https://github.com/khulnasoft).
+* 👷 Update issue-manager.yml GitHub Action permissions. PR [#26](https://github.com/khulnasoft/issue-manager/pull/26) by [@khulnasoft](https://github.com/khulnasoft).
+* 🔧 Add GitHub templates for discussions and issues, and security policy. PR [#22](https://github.com/khulnasoft/issue-manager/pull/22) by [@alejsdev](https://github.com/alejsdev).
 
 ### 0.5.0
 
 #### Features
 
-* ✨ Add first-class support for PRs, including reviews, review comments. PR [#20](https://github.com/khulnasoft/issue-manager-action/pull/20) by [@khulnasoft](https://github.com/khulnasoft).
+* ✨ Add first-class support for PRs, including reviews, review comments. PR [#20](https://github.com/khulnasoft/issue-manager/pull/20) by [@khulnasoft](https://github.com/khulnasoft).
 
 ### 0.4.1
 
 #### Fixes
 
-* 🐛 Fix datetime comparison. PR [#19](https://github.com/khulnasoft/issue-manager-action/pull/19) by [@khulnasoft](https://github.com/khulnasoft).
+* 🐛 Fix datetime comparison. PR [#19](https://github.com/khulnasoft/issue-manager/pull/19) by [@khulnasoft](https://github.com/khulnasoft).
 
 #### Internal
 
-* 🔧 Add funding. PR [#18](https://github.com/khulnasoft/issue-manager-action/pull/18) by [@khulnasoft](https://github.com/khulnasoft).
-* 👷 Update dependabot. PR [#17](https://github.com/khulnasoft/issue-manager-action/pull/17) by [@khulnasoft](https://github.com/khulnasoft).
-* 👷 Add latest-changes GitHub Action. PR [#16](https://github.com/khulnasoft/issue-manager-action/pull/16) by [@khulnasoft](https://github.com/khulnasoft).
+* 🔧 Add funding. PR [#18](https://github.com/khulnasoft/issue-manager/pull/18) by [@khulnasoft](https://github.com/khulnasoft).
+* 👷 Update dependabot. PR [#17](https://github.com/khulnasoft/issue-manager/pull/17) by [@khulnasoft](https://github.com/khulnasoft).
+* 👷 Add latest-changes GitHub Action. PR [#16](https://github.com/khulnasoft/issue-manager/pull/16) by [@khulnasoft](https://github.com/khulnasoft).
 
 ### 0.4.0
 
-* ✨ Add support for managing PRs and remove support for HTML comments to avoid rate limits. PR [#12](https://github.com/khulnasoft/issue-manager-action/pull/12) by [@khulnasoft](https://github.com/khulnasoft).
-* 👷 Add Latest Changes GitHub Action. PR [#13](https://github.com/khulnasoft/issue-manager-action/pull/13) by [@khulnasoft](https://github.com/khulnasoft).
+* ✨ Add support for managing PRs and remove support for HTML comments to avoid rate limits. PR [#12](https://github.com/khulnasoft/issue-manager/pull/12) by [@khulnasoft](https://github.com/khulnasoft).
+* 👷 Add Latest Changes GitHub Action. PR [#13](https://github.com/khulnasoft/issue-manager/pull/13) by [@khulnasoft](https://github.com/khulnasoft).
 
 ### 0.3.0
 
-* Add option to remove a label automatically after closing the issue. PR [#10](https://github.com/khulnasoft/issue-manager-action/pull/10).
+* Add option to remove a label automatically after closing the issue. PR [#10](https://github.com/khulnasoft/issue-manager/pull/10).
 
 ### 0.2.1
 
-* Avoid crashing when a label has been edited _after_ added to the issue. PR [#9](https://github.com/khulnasoft/issue-manager-action/pull/9).
-* Fix using single quote (`'`) in README examples. PR [#6](https://github.com/khulnasoft/issue-manager-action/pull/6) by [@svlandeg](https://github.com/svlandeg).
+* Avoid crashing when a label has been edited _after_ added to the issue. PR [#9](https://github.com/khulnasoft/issue-manager/pull/9).
+* Fix using single quote (`'`) in README examples. PR [#6](https://github.com/khulnasoft/issue-manager/pull/6) by [@svlandeg](https://github.com/svlandeg).
 
 ### 0.2.0
 
@@ -427,7 +473,7 @@ It will also run after each comment or label added, with the specific issue that
 
 ### 0.1.1
 
-* Fix incorrect input name. PR [#3](https://github.com/khulnasoft/issue-manager-action/pull/3) by [@browniebroke](https://github.com/browniebroke).
+* Fix incorrect input name. PR [#3](https://github.com/khulnasoft/issue-manager/pull/3) by [@browniebroke](https://github.com/browniebroke).
 
 ### 0.1.0
 
